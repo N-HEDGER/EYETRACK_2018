@@ -1,0 +1,73 @@
+function [const]=const_config(scr,const)
+% ----------------------------------------------------------------------
+% [scr]=scrConfig(const)
+% ----------------------------------------------------------------------
+% Goal of the function :
+% Define configuration relative to the screen
+% ----------------------------------------------------------------------
+% Input(s) :
+% scr : struct containing screen configurations
+% const : struct containing constant configurations
+% ----------------------------------------------------------------------
+% Output(s):
+% const: struct containing constant configurations
+% ----------------------------------------------------------------------
+% Function created by Nick Hedger
+% Project :     Eyetracking 2018
+% Version :     1.0
+% ----------------------------------------------------------------------
+
+
+%% Design parameters
+
+const.stimtypes=2;
+% Social and Nonsocial.
+
+const.scrams=2;
+% Scrambled and unscrambled.
+
+const.durations=[11.11 22.22 44.44 500 1000];
+% May need adjuting based on refresh we seem to have.
+
+const.reps=10;
+% Repetitions
+
+%960 trials
+const.numtrials=(const.stimtypes*const.scrams*length(const.durations)*const.reps);
+
+%% Stimulus parameters
+
+const.background_color=[128 128 128]; % Color of the background.
+const.element_con=1; % Contrast of image.
+const.element_lum=1; % Luminance of image.
+const.element_sizeVal=10; % Size of image (DVA)
+const.element_size=round(vaDeg2pix(const.element_sizeVal,scr)); % Size of image in pixels.
+const.ctr=scr.mid; % Middle of the screen.
+const.sep=0; % Separation of images.
+const.ctrl=const.ctr-const.sep; % Centre of left image. 
+const.ctrr=const.ctr+const.sep; % Centre of right image.
+
+const.asp=0.69; % Aspect ratio of images.
+const.framewidth=100; % Width of the frame.
+
+const.stimbot=scr.scr_sizeY; % Bottom of screen.
+const.stimright=scr.scr_sizeX; % Right of screen.
+
+const.progbar_xsize=const.stimright; % Progress bar width.
+const.progbar_ysize=10; % Progress bar height.
+const.progBar =[0 0  const.progbar_xsize  const.progbar_ysize];
+
+% Fixation.
+const.bigfixsizeval=0.5; % Size of outer circle of fixation (DVA).
+const.bigfixsize=round(vaDeg2pix(const.bigfixsizeval,scr)); % Size of outer circle of fixation in pixels.
+const.smallfixsizeval=0.25; % Size of inner circle of fixation (DVA).
+const.smallfixsize=round(vaDeg2pix(const.smallfixsizeval,scr)); % Size of inner circle of fixation in pixels
+const.bigfixcol=[0 0 0]; % Color of big fixation circle
+const.smallfixcol=[70 70 70]; % Color of small fixation circle
+const.blue=[0 0 200];
+
+% Mask
+const.maskdur=0.2;
+const.ITI=2;
+
+end
