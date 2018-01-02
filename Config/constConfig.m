@@ -1,4 +1,4 @@
-function [const]=const_config(scr,const)
+function [const]=constConfig(scr,const)
 % ----------------------------------------------------------------------
 % [scr]=scrConfig(const)
 % ----------------------------------------------------------------------
@@ -32,7 +32,6 @@ const.durations=[11.11 22.22 44.44 500 1000];
 const.reps=10;
 % Repetitions
 
-%960 trials
 const.numtrials=(const.stimtypes*const.scrams*length(const.durations)*const.reps);
 
 %% Stimulus parameters

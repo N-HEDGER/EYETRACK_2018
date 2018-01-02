@@ -28,7 +28,8 @@ if const.oldsub==0 % Is this an old subject?
 
 % Text configurations
 % -----------------------
-[text] = textconfig;
+[text] = textConfig;
+
 
 % Experimental constant
 % ---------------------
@@ -38,9 +39,10 @@ if const.oldsub==0 % Is this an old subject?
 % -------------------
 [Trialevents] = designConfig(const);
 
-% Experimental design
+% Audio
 % -------------------
 [sounds] = soundConfig;
+
 
 else
     scr=const.config.scr;
@@ -68,12 +70,11 @@ Screen('Flip', scr.main);
 KbWait
 DrawFormattedText(scr.main, 'STARTING', 'justifytomax', 100, WhiteIndex(scr.main),[],[]);
 Screen('Flip', scr.main);
+
 % % Trial runner
 % % ------------
 runTrials(scr,const,Trialevents,my_key,text);
 % 
-% % End
-% % ---
-% overDone(const);
+
 
 end

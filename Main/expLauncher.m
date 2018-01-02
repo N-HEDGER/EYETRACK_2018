@@ -7,11 +7,11 @@
 
 % First settings
 % --------------
-clear vars;clear mex;clear functions;close all;home;ListenChar(1);
+%clear vars;clear mex;clear functions;close all;home;ListenChar(1);
 
 % Desired screen settings
 % -----------------------
-const.desiredFD     = 90;                  % Desired refresh rate
+const.desiredFD     = 60;                  % Desired refresh rate
 const.desiredRes    = [1280,1024];          % Desired resolution
 
 
