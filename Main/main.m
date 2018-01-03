@@ -3,13 +3,13 @@ function main(const)
 % main(const)
 % ----------------------------------------------------------------------
 % Goal of the function :
-% Launch all functions of the experiment
+% Launch all the configuration functions of the experiment
 % ----------------------------------------------------------------------
 % Input(s) :
 % const : struct containing a some constant configuration
 % ----------------------------------------------------------------------
 % Output(s):
-% none
+% scr, my_key, text, const, Trialevents, sounds
 % ----------------------------------------------------------------------
 % Function created by Nick Hedger
 % Project :     Eyetracking 2018
@@ -29,7 +29,6 @@ if const.oldsub==0 % Is this an old subject?
 % Text configurations
 % -----------------------
 [text] = textConfig;
-
 
 % Experimental constant
 % ---------------------
@@ -62,18 +61,17 @@ Screen('Preference', 'SkipSyncTests', 1);
 [scr.main,scr.rect] = Screen('OpenWindow',scr.scr_num,const.background_color,[], scr.clr_depth,2);
 priorityLevel = MaxPriority(scr.main);Priority(priorityLevel);
 DrawFormattedText(scr.main, text.instruct, 'justifytomax', 100, WhiteIndex(scr.main),[],[]);
-PAS=im2uint8(imread('instructstim.jpg'));
-const.tex.PAStex=Screen('MakeTexture', scr.main,PAS);
-Screen('DrawTexture',scr.main,const.tex.PAStex,[],[500 500 1000 1000]);
+
 % Update the display to show the instruction text:
 Screen('Flip', scr.main);
 KbWait
 DrawFormattedText(scr.main, 'STARTING', 'justifytomax', 100, WhiteIndex(scr.main),[],[]);
 Screen('Flip', scr.main);
 
+
 % % Trial runner
 % % ------------
-runTrials(scr,const,Trialevents,my_key,text);
+runTrials(scr,const,Trialevents,my_key,text,sounds);
 % 
 
 

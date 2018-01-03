@@ -5,7 +5,7 @@
 % With :    Bhisma Chakrabarti
 % Version:  1.0
 
-% First settings
+   %        First settings
 % --------------
 %clear vars;clear mex;clear functions;close all;home;ListenChar(1);
 
@@ -15,11 +15,11 @@ const.desiredFD     = 60;                  % Desired refresh rate
 const.desiredRes    = [1280,1024];          % Desired resolution
 
 
-% Path
+% Path     
 % ----
 dir = (which('expLauncher'));cd(dir(1:end-18));
 
-% Add Matlab paths
+% Add paths
 % ---------------
 addpath('Config','Main','Stim','Trial','Data','Conversion','Misc','GUI');
 

@@ -3,7 +3,10 @@ function [const] = sbjConfig(const)
 % [const]=sbjConfig(const)
 % ----------------------------------------------------------------------
 % Goal of the function :
-% Define subject configurations (initials, gender...)
+% Define subject configurations (initials, gender...).
+% Runs a GUI for inputting subject info.
+% Flags whether the filename already exists and if true, starts from where 
+% They left off
 % ----------------------------------------------------------------------
 % Input(s) :
 % const : struct containing constant configurations
@@ -19,33 +22,34 @@ function [const] = sbjConfig(const)
 % GUI elements
 
 sbj=struct();
-sbj=RunExp;
+sbj=RunExp; % Runs a GUI for inputting subject details.
 const.sbj=sbj;
 const.isfixed=const.sbj.isfixed;
-const.filename=strcat('Data/',const.sbj.subname{1},'.mat');
-const.txtfilename=strcat('Data/',const.sbj.subname{1},'.txt');
+const.filename=strcat('Data/',const.sbj.subname{1},'.mat'); % Filename for mat file.
+const.txtfilename=strcat('Data/',const.sbj.subname{1},'.txt'); % Filename for log file
 
-if exist(const.filename)
-   datafilename=const.filename
+if exist(const.filename) % If the filename exists, get rid of everything else.
+    datafilename=const.filename
     clearvars -except datafilename
-    load(datafilename)
+    load(datafilename) % Load the file.
     
-     X = [' You have done ',(config.const.trialsdone),' trials'];
+    X = [' You have done ',(config.const.trialsdone),' trials']; % Display the number of trials done.
     disp(X)
     % Ask for response.
-    Q1=input('That filename already exists. You have done the above number of trials in this session, correct [0= no, 1= yes]');
-if Q1==0
-        %         If incorrect, chose different initials.
+    Q1=input('That filename already exists. You have done the above number of trials,  correct [0= no, 1= yes]');
+    if Q1==0
+        % If incorrect, chose different initials.
         error('something has gone wrong. Please choose a different filename')
-else
-const=config.const;
-const.oldsub=1;
-const.config=config;
-const.starttrial=str2num(const.trialsdone);
-end
-
-else
-const.oldsub=0;
-const.starttrial=1;
+    else
+        % If correct, proceed from the trial where the subject last finished.
+        const=config.const;
+        const.oldsub=1;
+        const.config=config;
+        const.starttrial=str2num(const.trialsdone);
+    end
+    
+else % If the filename doesnt exist, then start at trial 1.
+    const.oldsub=0;
+    const.starttrial=1;
 end
 end
