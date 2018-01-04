@@ -51,6 +51,7 @@ const.framewidth=100; % Width of the frame.
 
 const.stimbot=scr.scr_sizeY; % Bottom of screen.
 const.stimright=scr.scr_sizeX; % Right of screen.
+const.size=[const.stimright,const.stimbot];
 
 const.progbar_xsize=const.stimright; % Progress bar width.
 const.progbar_ysize=10; % Progress bar height.
@@ -67,6 +68,7 @@ const.smallerfixsizeval=0.1; % Size of inner circle of fixation (DVA).
 const.smallerfixsize=round(vaDeg2pix(const.smallerfixsizeval,scr)); % Size of inner circle of fixation in pixels
 const.smallerfixcol=[255 255 255];
 const.blue=[0 0 200];
+const.dotSizePix = 5;
 
 % Mask
 const.maskdur=0.2;

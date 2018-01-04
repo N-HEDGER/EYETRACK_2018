@@ -1,4 +1,4 @@
-function runTrials(scr,const,Trialevents,my_key,text,sounds)
+function runTrials(scr,const,Trialevents,my_key,text,sounds,eye)
 % ----------------------------------------------------------------------
 % runTrials(scr,const,Trialevents,my_key,text)
 % ----------------------------------------------------------------------
@@ -84,10 +84,10 @@ DrawFormattedText(scr.main, 'PRESS ANY KEY TO BEGIN', 'justifytomax', 100, White
 Screen('Flip', scr.main);
 KbWait;
 
- for i = const.starttrial:length(Trialevents.trialmat);
+for i = const.starttrial:length(Trialevents.trialmat);
 
 % Run single trial
-[Trialevents] = runSingleTrial(scr,const,Trialevents,my_key,text,sounds,i);
+[Trialevents] = runSingleTrial(scr,const,Trialevents,my_key,text,sounds,eye,i);
 
 WaitSecs(const.ITI);
     
@@ -103,7 +103,7 @@ Screen('CloseAll');
 
 % Dont save any textures.
 const.tex=[];
-config.scr = scr; config.const = const; config.Trialevents = Trialevents; config.my_key = my_key;config.text = text; config.sounds = sounds;
+config.scr = scr; config.const = const; config.Trialevents = Trialevents; config.my_key = my_key;config.text = text; config.sounds = sounds; config.eye=eye;
 save(const.filename,'config');
 
 % End messages

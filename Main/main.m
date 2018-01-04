@@ -42,12 +42,18 @@ if const.oldsub==0 % Is this an old subject?
 % -------------------
 [sounds] = soundConfig;
 
+% Eye tracker.
+% -------------------
+[eye] = eyeConfig(sounds);
+
 
 else
     scr=const.config.scr;
     my_key=const.config.my_key;
     text=const.config.text;
     Trialevents=const.config.Trialevents;
+    sounds=const.config.sounds;
+    eye=const.config.eye;
     const=rmfield(const,'config')
 end
 
@@ -71,7 +77,7 @@ Screen('Flip', scr.main);
 
 % % Trial runner
 % % ------------
-runTrials(scr,const,Trialevents,my_key,text,sounds);
+runTrials(scr,const,Trialevents,my_key,text,sounds,eye);
 % 
 
 

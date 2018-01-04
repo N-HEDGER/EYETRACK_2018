@@ -18,4 +18,7 @@ function [sounds]=soundConfig
 [sounds.loaded,sounds.loadedf] = audioread('bring.wav');
 [sounds.begin,sounds.beginf] = audioread('kaching.wav');
 
+[sounds.eye,sounds.eyef] = audioread('cure.wav');
+[sounds.noeye,sounds.noeyef] = audioread('beatrush.wav');
+
 end

@@ -28,5 +28,4 @@ text.scramlabel={'intact','scrambled'};
 text.durlabel={};
 text.targmorphstrengthlabel={'low','high'};
 text.formatSpecTrial=('Trial %s Stimtype: %s Scram type: %s Duration: %s');
-
 end

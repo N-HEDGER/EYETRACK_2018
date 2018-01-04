@@ -1,4 +1,4 @@
-function [Trialevents]=runSingleTrial(scr,const,Trialevents,my_key,text,sounds,i)
+function [Trialevents]=runSingleTrial(scr,const,Trialevents,my_key,text,sounds,eye,i)
 % ----------------------------------------------------------------------
 % [Trialevents]=runSingleTrial(scr,const,Trialevents,my_key,text,i)
 % ----------------------------------------------------------------------
@@ -33,8 +33,6 @@ trial.duration=Trialevents.trialmat(i,4)/1000;
 
 % Print the condition details to the external file.
 
-text.formatSpecTrial=('Trial %s Stimtype: %s Scram type: %s Duration: %s');
-
 log_txt=sprintf(text.formatSpecTrial,trial.trialnum,text.stimlabel{trial.stimtype},text.scramlabel{trial.scramtype},trial.duration);
 fprintf(const.log_text_fid,'%s\n',log_txt);
 
@@ -48,29 +46,40 @@ const.trialsdone=trial.trialnum;
     Screen('DrawDots',scr.main,scr.mid,const.smallerfixsize,const.smallerfixcol,[],1);
     
     sound(sounds.begin,sounds.beginf);
-    WaitSecs(0.1)
-    Fixonset=Screen('Flip',scr.main,[],[1]);
     
+    Fixonset=Screen('Flip',scr.main,[1]);
     
+    WaitSecs(0.3)
     % Stimulus
 
+    
+    tic
+ 
+    
+    gaze_data = eye.eyetracker.get_gaze_data();
     if trial.stimtype==1
     Screen('DrawTexture',scr.main,const.tex.Frametex,[],[const.stimrectl]);
     Screen('DrawTexture',scr.main,const.tex.Frametex,[],[const.stimrectr]);
     else
     Screen('DrawTexture',scr.main,const.tex.Frametex,[],[const.stimrectl]);
     Screen('DrawTexture',scr.main,const.tex.Frametex,[],[const.stimrectr]);
-    %Screen('DrawTexture',scr.main,const.tex.STIMULIsctex{trial.stimtype,trial.Model},[],[const.maskrect]);
     end
-    stimonset=Screen('Flip',scr.main,[Fixonset+const.maskdur]);  
     
+    Screen('Flip', scr.main);
+    eye.eyetracker.get_gaze_data();
+    pause(trial.duration)
+
+    
+    
+    collected_gaze_data=eye.eyetracker.get_gaze_data();
+    eye.eyetracker.stop_gaze_data();
     %  Mask
     %Screen('DrawTexture',scr.main,const.tex.Frametex,[],[const.framerect]);
     %Screen('DrawTexture',scr.main,const.tex.Masktex{2,randi(100)},[],[const.maskrect]);
-    M2onset=Screen('Flip',scr.main,[stimonset+(trial.duration)]);
+    M2onset=Screen('Flip',scr.main,[]);
    
  
-    Trialevents.elapsed{i}=M2onset-stimonset;
+    Trialevents.elapsed{i}=M2onset-Fixonset;
    
     
     t1=GetSecs;
@@ -83,10 +92,11 @@ const.trialsdone=trial.trialnum;
     if keyCode(my_key.space)==1;
     elseif keyCode(my_key.escape)==1
         const.trialsdone=trial.trialnum;
-        config.scr = scr; config.const = rmfield(const,'tex'); config.Trialevents = Trialevents; config.my_key = my_key;config.text = text;config.sounds = sounds;
+        config.scr = scr; config.const = rmfield(const,'tex'); config.Trialevents = Trialevents; config.my_key = my_key;config.text = text;config.sounds = sounds,config.eye = eye;
         log_txt=sprintf(text.formatSpecQuit,num2str(clock));
         fprintf(const.log_text_fid,'%s\n',log_txt);
         save(const.filename,'config');
+        save('gaze.mat','collected_gaze_data')
         ShowCursor(1);
         Screen('CloseAll')
     end
