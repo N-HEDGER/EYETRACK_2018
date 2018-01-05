@@ -28,7 +28,7 @@ function [Trialevents]=runSingleTrial(scr,const,Trialevents,my_key,text,sounds,e
 trial.trialnum=num2str(Trialevents.trialmat(i,1));  
 trial.stimtype=Trialevents.trialmat(i,2);
 trial.scramtype=Trialevents.trialmat(i,3);
-trial.duration=Trialevents.trialmat(i,4)/1000; 
+trial.duration=round(Trialevents.trialmat(i,4)/1000); 
 %trial.Model=Trialevents.trialmat(i,5);
 
 % Print the condition details to the external file.
@@ -53,10 +53,11 @@ const.trialsdone=trial.trialnum;
     % Stimulus
 
     
-    tic
  
-    
+    if isa(eye.eyetracker,'EyeTracker')
     gaze_data = eye.eyetracker.get_gaze_data();
+    end
+    
     if trial.stimtype==1
     Screen('DrawTexture',scr.main,const.tex.Frametex,[],[const.stimrectl]);
     Screen('DrawTexture',scr.main,const.tex.Frametex,[],[const.stimrectr]);
@@ -66,13 +67,12 @@ const.trialsdone=trial.trialnum;
     end
     
     Screen('Flip', scr.main);
-    eye.eyetracker.get_gaze_data();
-    pause(trial.duration)
 
-    
-    
-    collected_gaze_data=eye.eyetracker.get_gaze_data();
-    eye.eyetracker.stop_gaze_data();
+    pause(trial.duration)
+    if isa(eye.eyetracker,'EyeTracker')
+        eye.collected_gaze_data(i).gaze=eye.eyetracker.get_gaze_data();
+        eye.eyetracker.stop_gaze_data();
+    end
     %  Mask
     %Screen('DrawTexture',scr.main,const.tex.Frametex,[],[const.framerect]);
     %Screen('DrawTexture',scr.main,const.tex.Masktex{2,randi(100)},[],[const.maskrect]);
@@ -90,23 +90,23 @@ const.trialsdone=trial.trialnum;
     end
     
     if keyCode(my_key.space)==1;
-    elseif keyCode(my_key.escape)==1
-        const.trialsdone=trial.trialnum;
-        config.scr = scr; config.const = rmfield(const,'tex'); config.Trialevents = Trialevents; config.my_key = my_key;config.text = text;config.sounds = sounds,config.eye = eye;
-        log_txt=sprintf(text.formatSpecQuit,num2str(clock));
-        fprintf(const.log_text_fid,'%s\n',log_txt);
-        save(const.filename,'config');
-        save('gaze.mat','collected_gaze_data')
-        ShowCursor(1);
-        Screen('CloseAll')
-    end
-    
-    %  Update progress bar.
+            %  Update progress bar.
     progvec=round(linspace(1,const.stimright,length(Trialevents.trialmat)));
     progbar=[0 7 progvec(str2num(const.trialsdone)) 17];
     %    Draw slider at new location
     Screen('FillRect', scr.main, const.blue, progbar);
     
     Screen('Flip', scr.main);
+    elseif keyCode(my_key.escape)==1
+        const.trialsdone=trial.trialnum;
+        config.scr = scr; config.const = rmfield(const,'tex'); config.Trialevents = Trialevents; config.my_key = my_key;config.text = text;config.sounds = sounds;config.eye = eye;
+        log_txt=sprintf(text.formatSpecQuit,num2str(clock));
+        fprintf(const.log_text_fid,'%s\n',log_txt);
+        save(const.filename,'config');
+        ShowCursor(1);
+        Screen('CloseAll')
+    end
+    
+
     
 end

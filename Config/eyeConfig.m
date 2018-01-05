@@ -20,18 +20,19 @@ addpath(genpath('/Users/nickhedger/Downloads/TobiiPro.SDK.Matlab_1.2.1.54'))
 eye.tobii = EyeTrackingOperations();
 eye.eyetrackers = eye.tobii.find_all_eyetrackers();
 
-eye.eyetracker=eye.eyetrackers(1);
 
-
-if isa(eye.eyetracker,'EyeTracker')
-    disp('Eye tracker not found!');
-    sound(sounds.eye,sounds.eyef);
+if size(eye.eyetrackers)>0
+    eye.eyetracker=eye.eyetrackers(1);
+    if isa(eye.eyetracker,'EyeTracker')
+        disp('Eye tracker l o c a t e d');
+        sound(sounds.eye,sounds.eyef);
+    end
 else
-    disp('Eye tracker not found!');
-    sound(sounds.noeye,sounds.noeyef);
+     sound(sounds.noeye,sounds.noeyef);
+     eye.eyetracker='NO EYETRACKER';
 end
 
-
 eye.tobii = EyeTrackingOperations();
+eye.collected_gaze_data=struct;
 
 end

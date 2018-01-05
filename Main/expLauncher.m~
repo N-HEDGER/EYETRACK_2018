@@ -13,7 +13,7 @@
 % -----------------------
 const.desiredFD      = 60;                  % Desired refresh rate
 const.desiredRes    = [1280,1024];          % Desired resolution
-    
+
 
 % Path     
 % ----

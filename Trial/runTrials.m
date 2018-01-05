@@ -91,7 +91,7 @@ for i = const.starttrial:length(Trialevents.trialmat);
 
 WaitSecs(const.ITI);
     
-config.scr = scr; config.const = rmfield(const,'tex'); config.Trialevents = Trialevents; config.my_key = my_key;config.text = text;
+config.scr = scr; config.const = rmfield(const,'tex'); config.Trialevents = Trialevents; config.my_key = my_key;config.text = text; config.eye=eye;
 
 
 save(const.filename,'config');

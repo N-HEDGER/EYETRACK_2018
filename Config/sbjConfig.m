@@ -27,6 +27,7 @@ const.sbj=sbj;
 const.isfixed=const.sbj.isfixed;
 const.filename=strcat('Data/',const.sbj.subname{1},'.mat'); % Filename for mat file.
 const.txtfilename=strcat('Data/',const.sbj.subname{1},'.txt'); % Filename for log file
+const.gazefilename=strcat('Data/',const.sbj.subname{1},'_gaze','.mat'); % Filename for log file
 
 if exist(const.filename) % If the filename exists, get rid of everything else.
     datafilename=const.filename
