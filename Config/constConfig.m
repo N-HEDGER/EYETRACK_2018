@@ -26,11 +26,11 @@ const.stimtypes=2;
 const.scrams=2;
 % Scrambled and unscrambled.
 
-const.durations=[500 3000 5000 10000];
+const.durations=[5000];
 % May need adjuting based on refresh we seem to have.
 
-const.reps=10;
-% Repetitions
+const.reps=40;
+% Repetitions 1 for each stimulus.
 
 const.numtrials=(const.stimtypes*const.scrams*length(const.durations)*const.reps);
 
@@ -47,7 +47,7 @@ const.sep=round(vaDeg2pix(const.sep_sizeVal,scr)/2)+round(const.element_size/2);
 
 
 const.asp=0.74; % Aspect ratio of images.
-const.framewidth=100; % Width of the frame.
+const.framewidth=40; % Width of the frame.
 
 const.stimbot=scr.scr_sizeY; % Bottom of screen.
 const.stimright=scr.scr_sizeX; % Right of screen.
@@ -70,8 +70,7 @@ const.smallerfixcol=[255 255 255];
 const.blue=[0 0 200];
 const.dotSizePix = 5;
 
-% Mask
-const.maskdur=0.2;
-const.ITI=2;
+const.fixdur=0.3;
+const.ITI=2; % Inter-trial interval.
 
 end

@@ -33,6 +33,5 @@ else
 end
 
 eye.tobii = EyeTrackingOperations();
-eye.collected_gaze_data=struct;
 
 end

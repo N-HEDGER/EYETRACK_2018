@@ -44,8 +44,8 @@ NOISE3{1}=imnoise(rgb2gray(startim),'salt & pepper',prop);
 % Give the noise the same amplitude spectra as the R G and B planes from
 % the image
 [RNOISE]=specMatch(NOISE,0,RSPEC);
-[GNOISE]=specMatch(NOISE2,0,GSPEC);
-[BNOISE]=specMatch(NOISE3,0,BSPEC);
+[GNOISE]=specMatch(NOISE,0,GSPEC);
+[BNOISE]=specMatch(NOISE,0,BSPEC);
 
 % Create new rgb image by combining the 3 noise images
 NOISE=gray2rgb(RNOISE{1});
@@ -57,7 +57,7 @@ NOISE(:,:,3)=BNOISE{1};
 noiseim=normalise(NOISE);
 if isplot
 subplot(1,2,1)
-imshow(image)
+imshow(noiseim)
 subplot(1,2,2)
 imshow(startim)
 else

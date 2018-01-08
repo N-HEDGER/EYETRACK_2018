@@ -23,7 +23,7 @@ scr.scr_num = max(scr.all);
 % Screen resolution (pixel) :
 [scr.scr_sizeX, scr.scr_sizeY]=Screen('WindowSize', scr.scr_num);
 
-% Size of the display :
+% Physical size of the display :
 scr.disp_sizeX = 340;scr.disp_sizeY=220; 
 
 % Pixels size:
@@ -39,7 +39,7 @@ scr.hz = 1/(scr.frame_duration);
  end
 
 
-% Subject dist
+% Subject viewing distance.
 scr.dist = 67;             
 
 % Center of the screen :

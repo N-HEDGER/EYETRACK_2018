@@ -1,4 +1,4 @@
-function [Trialevents]=runSingleTrial(scr,const,Trialevents,my_key,text,sounds,eye,i)
+function [const,Trialevents,eye,text]=runSingleTrial(scr,const,Trialevents,my_key,text,sounds,eye,i)
 % ----------------------------------------------------------------------
 % [Trialevents]=runSingleTrial(scr,const,Trialevents,my_key,text,i)
 % ----------------------------------------------------------------------
@@ -12,6 +12,7 @@ function [Trialevents]=runSingleTrial(scr,const,Trialevents,my_key,text,sounds,e
 % Trialevents: structure containing trial events
 % text: structure containing text config.
 % sounds: structure containing sounds.
+% eye: Eye-tracking info.
 % i: the trial number
 % ----------------------------------------------------------------------
 % Output(s):
@@ -21,20 +22,22 @@ function [Trialevents]=runSingleTrial(scr,const,Trialevents,my_key,text,sounds,e
 % Function created by Nick Hedger
 % Project :     priming
 
-%% Prepare stimuli
-%  ---------------
 
 % Trial-level variables;
 trial.trialnum=num2str(Trialevents.trialmat(i,1));  
 trial.stimtype=Trialevents.trialmat(i,2);
 trial.scramtype=Trialevents.trialmat(i,3);
-trial.duration=round(Trialevents.trialmat(i,4)/1000); 
-%trial.Model=Trialevents.trialmat(i,5);
+trial.duration=Trialevents.trialmat(i,4)/1000; 
+trial.Model=Trialevents.trialmat(i,5);
 
 % Print the condition details to the external file.
 
-log_txt=sprintf(text.formatSpecTrial,trial.trialnum,text.stimlabel{trial.stimtype},text.scramlabel{trial.scramtype},trial.duration);
+log_txt=sprintf(text.formatSpecTrial,trial.trialnum,text.stimlabel{trial.stimtype},text.scramlabel{trial.scramtype},num2str(trial.duration),num2str(trial.Model));
 fprintf(const.log_text_fid,'%s\n',log_txt);
+
+if const.debug
+fprintf(strcat(log_txt,'\n'));
+end
 
 const.trialsdone=trial.trialnum;
 
@@ -42,59 +45,91 @@ const.trialsdone=trial.trialnum;
     HideCursor;
     % Fixation dot;
     Screen('DrawDots',scr.main,scr.mid,const.bigfixsize,const.bigfixcol,[],1);
-    Screen('DrawDots',scr.main,scr.mid,const.smallfixsize,const.smallfixcol,[],1);
-    Screen('DrawDots',scr.main,scr.mid,const.smallerfixsize,const.smallerfixcol,[],1);
-    
+    Screen('DrawDots',scr.main,scr.mid,const.smallfixsize,const.blue,[],1);
+    Screen('DrawDots',scr.main,scr.mid,const.smallerfixsize,const.blue,[],1);
     sound(sounds.begin,sounds.beginf);
     
     Fixonset=Screen('Flip',scr.main,[1]);
     
-    WaitSecs(0.3)
-    % Stimulus
-
+    WaitSecs(const.fixdur);
     
- 
+    % If there is an eyetracker detected, start recording gaze
+
     if isa(eye.eyetracker,'EyeTracker')
     gaze_data = eye.eyetracker.get_gaze_data();
+    log_txt=sprintf(text.gazestart,num2str(clock));
+    fprintf(const.log_text_fid,'%s\n',log_txt);
     end
     
-    if trial.stimtype==1
-    Screen('DrawTexture',scr.main,const.tex.Frametex,[],[const.stimrectl]);
-    Screen('DrawTexture',scr.main,const.tex.Frametex,[],[const.stimrectr]);
-    else
-    Screen('DrawTexture',scr.main,const.tex.Frametex,[],[const.stimrectl]);
-    Screen('DrawTexture',scr.main,const.tex.Frametex,[],[const.stimrectr]);
+
+    
+    % Frames
+    Screen('DrawTexture',scr.main,const.tex.Frametex,[],[const.framerectl]); 
+    Screen('DrawTexture',scr.main,const.tex.Frametex,[],[const.framerectr]); 
+    
+    if trial.stimtype==1 && trial.scramtype==1
+    Screen('DrawTexture',scr.main,const.tex.stim{1,trial.Model},[],[const.stimrectl]);
+    Screen('DrawTexture',scr.main,const.tex.stim{2,trial.Model},[],[const.stimrectr]);
+    elseif trial.stimtype==2 && trial.scramtype==1
+    Screen('DrawTexture',scr.main,const.tex.stim{2,trial.Model},[],[const.stimrectl]);
+    Screen('DrawTexture',scr.main,const.tex.stim{1,trial.Model},[],[const.stimrectr]);
+    elseif trial.stimtype==1 && trial.scramtype==2
+    Screen('DrawTexture',scr.main,const.tex.stimsc{1,trial.Model},[],[const.stimrectl]);
+    Screen('DrawTexture',scr.main,const.tex.stimsc{2,trial.Model},[],[const.stimrectr]);
+    elseif trial.stimtype==2 && trial.scramtype==2
+    Screen('DrawTexture',scr.main,const.tex.stimsc{2,trial.Model},[],[const.stimrectl]);
+    Screen('DrawTexture',scr.main,const.tex.stimsc{1,trial.Model},[],[const.stimrectr]); 
     end
     
-    Screen('Flip', scr.main);
+    
+    
+    Stimonset=Screen('Flip', scr.main);
+    
+    log_txt=sprintf(text.formatSpecFlip1,num2str(clock));
+    fprintf(const.log_text_fid,'%s\n',log_txt);
+    
 
     pause(trial.duration)
     if isa(eye.eyetracker,'EyeTracker')
         eye.collected_gaze_data(i).gaze=eye.eyetracker.get_gaze_data();
         eye.eyetracker.stop_gaze_data();
+        log_txt=sprintf(text.gazestop,num2str(clock));
+        fprintf(const.log_text_fid,'%s\n',log_txt);
     end
-    %  Mask
-    %Screen('DrawTexture',scr.main,const.tex.Frametex,[],[const.framerect]);
-    %Screen('DrawTexture',scr.main,const.tex.Masktex{2,randi(100)},[],[const.maskrect]);
-    M2onset=Screen('Flip',scr.main,[]);
-   
- 
-    Trialevents.elapsed{i}=M2onset-Fixonset;
-   
+    
+    %  Offset
+    
+    Screen('DrawDots',scr.main,scr.mid,const.bigfixsize,const.bigfixcol,[],1);
+    Screen('DrawDots',scr.main,scr.mid,const.smallfixsize,const.smallfixcol,[],1);
+    Screen('DrawDots',scr.main,scr.mid,const.smallerfixsize,const.smallerfixcol,[],1);
+    Stimoffset=Screen('Flip',scr.main,[]);
+    Trialevents.elapsed{i}=Stimoffset-Stimonset;
+    log_txt=sprintf(text.formatSpecFlip1,num2str(clock));
+    fprintf(const.log_text_fid,'%s\n',log_txt);
+    
+    
+    %  Update progress bar.
+    progvec=round(linspace(1,const.stimright,length(Trialevents.trialmat)));
+    progbar=[0 7 progvec(str2num(const.trialsdone)) 17];
+    %  Draw slider at new location
+    Screen('FillRect', scr.main, const.blue, progbar);
     
     t1=GetSecs;
     [KeyIsDown,secs,keyCode]=KbCheck;
-     %Screen('Flip',scr.main,[targonset+const.targdur]);
     while keyCode(my_key.space)==0 && keyCode(my_key.escape)==0
         [KeyisDown,secs,keyCode]=KbCheck;
     end
     
     if keyCode(my_key.space)==1;
-            %  Update progress bar.
-    progvec=round(linspace(1,const.stimright,length(Trialevents.trialmat)));
-    progbar=[0 7 progvec(str2num(const.trialsdone)) 17];
-    %    Draw slider at new location
-    Screen('FillRect', scr.main, const.blue, progbar);
+    const.trialsdone=trial.trialnum;
+    config.scr = scr; config.const = rmfield(const,'tex'); config.Trialevents = Trialevents; config.my_key = my_key;config.text = text;config.sounds = sounds;config.eye = eye;
+    log_txt=sprintf(text.save,num2str(clock));
+    fprintf(const.log_text_fid,'%s\n',log_txt);
+    save(const.filename,'config');
+    
+    Screen('DrawDots',scr.main,scr.mid,const.bigfixsize,const.bigfixcol,[],1);
+    Screen('DrawDots',scr.main,scr.mid,const.smallfixsize,const.smallfixcol,[],1);
+    Screen('DrawDots',scr.main,scr.mid,const.smallerfixsize,const.smallerfixcol,[],1);
     
     Screen('Flip', scr.main);
     elseif keyCode(my_key.escape)==1

@@ -6,7 +6,7 @@ function [const] = sbjConfig(const)
 % Define subject configurations (initials, gender...).
 % Runs a GUI for inputting subject info.
 % Flags whether the filename already exists and if true, starts from where 
-% They left off
+% they left off
 % ----------------------------------------------------------------------
 % Input(s) :
 % const : struct containing constant configurations
@@ -26,8 +26,8 @@ sbj=RunExp; % Runs a GUI for inputting subject details.
 const.sbj=sbj;
 const.isfixed=const.sbj.isfixed;
 const.filename=strcat('Data/',const.sbj.subname{1},'.mat'); % Filename for mat file.
-const.txtfilename=strcat('Data/',const.sbj.subname{1},'.txt'); % Filename for log file
-const.gazefilename=strcat('Data/',const.sbj.subname{1},'_gaze','.mat'); % Filename for log file
+const.txtfilename=strcat('Data/',const.sbj.subname{1},'_log.txt'); % Filename for log file
+const.gazefilename=strcat('Data/',const.sbj.subname{1},'_gaze','.mat'); % Filename for gaze data file
 
 if exist(const.filename) % If the filename exists, get rid of everything else.
     datafilename=const.filename

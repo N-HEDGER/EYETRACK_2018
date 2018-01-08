@@ -17,15 +17,20 @@ function [Trialevents]=designConfig(const)
 % ----------------------------------------------------------------------
 
 % Define all possible combnations of the variables with 2 levels
-% (Image type, scram)
+% (Left or right?, scram)
 
 
 trialmat = unique(nchoosek([1,2,1,2],2), 'rows');
 
+% Socleft intact
+% Socleft scrambled
+% Socright intact
+% Socright scrambled
+
+% Now add durations
 Table = [];
 for i=1:length(const.durations)
 Table=[Table; shoveonend(trialmat,const.durations(i))];
 end
-
                     
 Trialevents.trialmat=GenerateEventTable(Table,const.reps,const.isfixed);

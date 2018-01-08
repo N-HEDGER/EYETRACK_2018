@@ -9,14 +9,14 @@ function main(const)
 % const : struct containing a some constant configuration
 % ----------------------------------------------------------------------
 % Output(s):
-% scr, my_key, text, const, Trialevents, sounds
+% scr, my_key, text, const, Trialevents, sounds, eye
 % ----------------------------------------------------------------------
 % Function created by Nick Hedger
 % Project :     Eyetracking 2018
 % Version :     1.0
 % ----------------------------------------------------------------------
 
-if const.oldsub==0 % Is this an old subject?
+if const.oldsub==0 % Is this an old subject? If it isn't then run all the config.
     
 % Screen configurations
 % ---------------------
@@ -47,17 +47,18 @@ if const.oldsub==0 % Is this an old subject?
 [eye] = eyeConfig(sounds);
 
 
-else
+else % If this is an old subject, then use the old config. 
     scr=const.config.scr;
     my_key=const.config.my_key;
     text=const.config.text;
     Trialevents=const.config.Trialevents;
     sounds=const.config.sounds;
     eye=const.config.eye;
-    const=rmfield(const,'config')
+    const=rmfield(const,'config');
 end
 
 
+% Open up the subjects log file.
 const.log_text_fid=fopen(const.txtfilename,'a+');
 
 % Open screen window
@@ -71,14 +72,13 @@ DrawFormattedText(scr.main, text.instruct, 'justifytomax', 100, WhiteIndex(scr.m
 % Update the display to show the instruction text:
 Screen('Flip', scr.main);
 KbWait
-DrawFormattedText(scr.main, 'STARTING', 'justifytomax', 100, WhiteIndex(scr.main),[],[]);
+DrawFormattedText(scr.main, text.preload, 'justifytomax', 100, WhiteIndex(scr.main),[],[]);
 Screen('Flip', scr.main);
 
 
 % % Trial runner
 % % ------------
 runTrials(scr,const,Trialevents,my_key,text,sounds,eye);
-% 
 
 
 end

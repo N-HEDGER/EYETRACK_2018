@@ -23,41 +23,42 @@ function runTrials(scr,const,Trialevents,my_key,text,sounds,eye)
 % ----------------------------------------------------------------------
 
 %% Make all textures
-% Masks
-% Masks=load('MasksS.mat');
-% Masks=Masks.noiseim;
-% Masks2=cell(1,length(Masks));
-% for t=1:length(Masks)
-%     Masks2{t}=imresize(im2uint8(Masks{t}),[const.element_size round(const.element_size*const.asp)]);
-%     const.tex.Masktex{1,t}=Screen('MakeTexture', scr.main,imadjust(Masks2{t},stretchlim(Masks2{t})));
-%     const.tex.Masktex{2,t}=Screen('MakeTexture', scr.main,imcomplement(imadjust(Masks2{t},stretchlim(Masks2{t}))));
-% end
 
-% Stimuli
-% STIMULI=load('STIMULI.mat');
-% STIMULIsc=load('STIMULIsc.mat');
+% The path is outside the repo, because we don't want to upload all of
+% that.
+addpath(genpath('/Users/nickhedger/Documents/Temp/Eyetrack_stim'))
 
+ STIMIN=load('intact.mat'); % Intact stimuli
+ STIMSC=load('scrambled.mat'); % Scrambled stimuli.
 
-% for t=1:10
-%     STIMULI{1,t}=imresize(im2uint8(STIMULI{t}),[const.element_size round(const.element_size*const.asp)]);
-%     const.tex.STIMULItex{1,t}=Screen('MakeTexture', scr.main,coladjust(STIMULI{1,t},const.element_lum,const.element_con));
-%     STIMULIsc{1,t}=imresize(im2uint8(STIMULIsc{t}),[const.element_size round(const.element_size*const.asp)]);
-%     const.tex.STIMULIsctex{1,t}=Screen('MakeTexture', scr.main,coladjust(STIMULIsc{1,t},const.element_lum,const.element_con));
-%     
-% end
+ dims=size(STIMIN.ims);
+ ntypes=dims(1); % Types of stimuli (intact, scrambled)
+ nstim=dims(2); % Instances (40).
+ 
+ STIMIN=STIMIN.ims;
+ STIMSC=STIMSC.ims2;
+ 
+ for t=1:ntypes
+     for s=1:nstim
+     STIMIN{t,s}=imresize(im2uint8(STIMIN{t,s}),[const.element_size round(const.element_size*const.asp)]);
+     const.tex.stim{t,s}=Screen('MakeTexture', scr.main,STIMIN{t,s});
+     STIMSC{t,s}=imresize(im2uint8(STIMSC{t,s}),[const.element_size round(const.element_size*const.asp)]);
+     const.tex.stimsc{t,s}=Screen('MakeTexture', scr.main,STIMSC{t,s});
+     
+     end
+ end
 
 
 % Frames
- Frametex=im2uint8(randn(const.element_size+const.framewidth,round(const.element_size*const.asp)+const.framewidth));
+ Frametex=im2uint8(randn(const.element_size+const.framewidth,round(const.element_size*const.asp)+const.framewidth)); % Random-dot frame.
  const.tex.Frametex=Screen('MakeTexture', scr.main,Frametex);
-%  const.tex.Greytex=Screen('MakeTexture', scr.main, im2uint8(repmat(0.5,const.element_size,const.element_size*round(const.asp))));
  const.progrect=CenterRect(const.progBar, scr.rect)-[0 500 0 500];
   
 % Define Rects
-[const.framerect,dh,dv] = CenterRect([0 0 round(const.element_size*const.asp)+const.framewidth const.element_size+const.framewidth], scr.rect);
+[const.framerectl] = CenterRect([0 0 round(const.element_size)+const.framewidth round(const.element_size*const.asp)+const.framewidth], scr.rect)-[const.sep 0 const.sep 0];
+[const.framerectr] = CenterRect([0 0 round(const.element_size)+const.framewidth round(const.element_size*const.asp)+const.framewidth], scr.rect)+[const.sep 0 const.sep 0];
 [const.stimrectl] = CenterRect([0 0 round(const.element_size) round(const.element_size*const.asp)], scr.rect)-[const.sep 0 const.sep 0];
 [const.stimrectr] = CenterRect([0 0 round(const.element_size) round(const.element_size*const.asp)], scr.rect)+[const.sep 0 const.sep 0];
-
 
 
 %% Experimental loop
@@ -65,11 +66,6 @@ if const.oldsub==0
 log_txt=sprintf(text.formatSpecStart,num2str(clock));
 fprintf(const.log_text_fid,'%s\n',log_txt);
 Trialevents.elapsed=cell(1,length(Trialevents.trialmat));
-Trialevents.awResp=zeros(1,length(Trialevents.trialmat));
-Trialevents.AFCresp=cell(1,length(Trialevents.trialmat));
-Trialevents.AFCresp2=cell(1,length(Trialevents.trialmat));
-Trialevents.morph=zeros(1,length(Trialevents.trialmat));
-
 
 else
     
@@ -78,24 +74,23 @@ fprintf(const.log_text_fid,'%s\n',log_txt);
     
 end
 
-
 sound(sounds.loaded,sounds.loadedf);
-DrawFormattedText(scr.main, 'PRESS ANY KEY TO BEGIN', 'justifytomax', 100, WhiteIndex(scr.main),[],[]);
+DrawFormattedText(scr.main, text.loaded, 'justifytomax', 100, WhiteIndex(scr.main),[],[]);
 Screen('Flip', scr.main);
 KbWait;
 
 for i = const.starttrial:length(Trialevents.trialmat);
 
 % Run single trial
-[Trialevents] = runSingleTrial(scr,const,Trialevents,my_key,text,sounds,eye,i);
+log_txt=sprintf(text.formatSpecTrialStart,num2str(clock));
+fprintf(const.log_text_fid,'%s\n',log_txt);
 
-WaitSecs(const.ITI);
-    
-config.scr = scr; config.const = rmfield(const,'tex'); config.Trialevents = Trialevents; config.my_key = my_key;config.text = text; config.eye=eye;
+[const,Trialevents,eye,text] = runSingleTrial(scr,const,Trialevents,my_key,text,sounds,eye,i);
 
+log_txt=sprintf(text.formatSpecTrialEnd,num2str(clock));
+fprintf(const.log_text_fid,'%s\n',log_txt);
 
-save(const.filename,'config');
-    
+WaitSecs(const.ITI);    
     
 end
 
