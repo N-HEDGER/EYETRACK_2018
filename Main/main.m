@@ -45,6 +45,7 @@ if const.oldsub==0 % Is this an old subject? If it isn't then run all the config
 % Eye tracker.
 % -------------------
 [eye] = eyeConfig(sounds);
+gaze=struct();
 
 
 else % If this is an old subject, then use the old config. 
@@ -53,7 +54,8 @@ else % If this is an old subject, then use the old config.
     text=const.config.text;
     Trialevents=const.config.Trialevents;
     sounds=const.config.sounds;
-    eye=const.config.eye;
+    [eye] = eyeConfig(sounds);
+    gaze=const.config.gaze;
     const=rmfield(const,'config');
 end
 
@@ -78,7 +80,7 @@ Screen('Flip', scr.main);
 
 % % Trial runner
 % % ------------
-runTrials(scr,const,Trialevents,my_key,text,sounds,eye);
+runTrials(scr,const,Trialevents,my_key,text,sounds,eye,gaze);
 
 
 end

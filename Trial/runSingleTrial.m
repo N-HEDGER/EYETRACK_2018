@@ -1,4 +1,4 @@
-function [const,Trialevents,eye,text]=runSingleTrial(scr,const,Trialevents,my_key,text,sounds,eye,i)
+function [const,Trialevents,eye,text,gaze]=runSingleTrial(scr,const,Trialevents,my_key,text,sounds,eye,i,gaze)
 % ----------------------------------------------------------------------
 % [Trialevents]=runSingleTrial(scr,const,Trialevents,my_key,text,i)
 % ----------------------------------------------------------------------
@@ -91,7 +91,7 @@ const.trialsdone=trial.trialnum;
 
     pause(trial.duration)
     if isa(eye.eyetracker,'EyeTracker')
-        eye.collected_gaze_data(i).gaze=eye.eyetracker.get_gaze_data();
+        gaze.collected_gaze_data(i).gaze=eye.eyetracker.get_gaze_data();
         eye.eyetracker.stop_gaze_data();
         log_txt=sprintf(text.gazestop,num2str(clock));
         fprintf(const.log_text_fid,'%s\n',log_txt);
@@ -122,7 +122,7 @@ const.trialsdone=trial.trialnum;
     
     if keyCode(my_key.space)==1;
     const.trialsdone=trial.trialnum;
-    config.scr = scr; config.const = rmfield(const,'tex'); config.Trialevents = Trialevents; config.my_key = my_key;config.text = text;config.sounds = sounds;config.eye = eye;
+    config.scr = scr; config.const = rmfield(const,'tex'); config.Trialevents = Trialevents; config.my_key = my_key;config.text = text;config.sounds = sounds;config.eye = eye; config.gaze=gaze;
     log_txt=sprintf(text.save,num2str(clock));
     fprintf(const.log_text_fid,'%s\n',log_txt);
     save(const.filename,'config');
@@ -134,7 +134,7 @@ const.trialsdone=trial.trialnum;
     Screen('Flip', scr.main);
     elseif keyCode(my_key.escape)==1
         const.trialsdone=trial.trialnum;
-        config.scr = scr; config.const = rmfield(const,'tex'); config.Trialevents = Trialevents; config.my_key = my_key;config.text = text;config.sounds = sounds;config.eye = eye;
+        config.scr = scr; config.const = rmfield(const,'tex'); config.Trialevents = Trialevents; config.my_key = my_key;config.text = text;config.sounds = sounds;config.eye = eye;config.gaze=gaze;
         log_txt=sprintf(text.formatSpecQuit,num2str(clock));
         fprintf(const.log_text_fid,'%s\n',log_txt);
         save(const.filename,'config');

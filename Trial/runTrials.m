@@ -1,4 +1,4 @@
-function runTrials(scr,const,Trialevents,my_key,text,sounds,eye)
+function runTrials(scr,const,Trialevents,my_key,text,sounds,eye,gaze)
 % ----------------------------------------------------------------------
 % runTrials(scr,const,Trialevents,my_key,text)
 % ----------------------------------------------------------------------
@@ -85,7 +85,7 @@ for i = const.starttrial:length(Trialevents.trialmat);
 log_txt=sprintf(text.formatSpecTrialStart,num2str(clock));
 fprintf(const.log_text_fid,'%s\n',log_txt);
 
-[const,Trialevents,eye,text] = runSingleTrial(scr,const,Trialevents,my_key,text,sounds,eye,i);
+[const,Trialevents,eye,text,gaze] = runSingleTrial(scr,const,Trialevents,my_key,text,sounds,eye,i,gaze);
 
 log_txt=sprintf(text.formatSpecTrialEnd,num2str(clock));
 fprintf(const.log_text_fid,'%s\n',log_txt);
@@ -98,7 +98,7 @@ Screen('CloseAll');
 
 % Dont save any textures.
 const.tex=[];
-config.scr = scr; config.const = const; config.Trialevents = Trialevents; config.my_key = my_key;config.text = text; config.sounds = sounds; config.eye=eye;
+config.scr = scr; config.const = const; config.Trialevents = Trialevents; config.my_key = my_key;config.text = text; config.sounds = sounds; config.eye=eye;config.gaze=gaze;
 save(const.filename,'config');
 
 % End messages
