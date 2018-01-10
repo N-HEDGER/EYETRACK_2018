@@ -28,8 +28,8 @@ function runTrials(scr,const,Trialevents,my_key,text,sounds,eye,gaze)
 % that.
 addpath(genpath('/Users/nickhedger/Documents/Temp/Eyetrack_stim'))
 
- STIMIN=load('intact.mat'); % Intact stimuli
- STIMSC=load('scrambled.mat'); % Scrambled stimuli.
+ STIMIN=load('intact_matched.mat'); % Intact stimuli
+ STIMSC=load('scrambled_matched.mat'); % Scrambled stimuli.
 
  dims=size(STIMIN.ims);
  ntypes=dims(1); % Types of stimuli (intact, scrambled)
@@ -59,8 +59,8 @@ addpath(genpath('/Users/nickhedger/Documents/Temp/Eyetrack_stim'))
 [const.framerectr] = CenterRect([0 0 round(const.element_size)+const.framewidth round(const.element_size*const.asp)+const.framewidth], scr.rect)+[const.sep 0 const.sep 0];
 [const.stimrectl] = CenterRect([0 0 round(const.element_size) round(const.element_size*const.asp)], scr.rect)-[const.sep 0 const.sep 0];
 [const.stimrectr] = CenterRect([0 0 round(const.element_size) round(const.element_size*const.asp)], scr.rect)+[const.sep 0 const.sep 0];
-
-
+instruct=im2uint8(imread('instruct.png'));
+const.tex.instruct=Screen('MakeTexture', scr.main,instruct);
 %% Experimental loop
 if const.oldsub==0
 log_txt=sprintf(text.formatSpecStart,num2str(clock));
@@ -75,6 +75,8 @@ fprintf(const.log_text_fid,'%s\n',log_txt);
 end
 
 sound(sounds.loaded,sounds.loadedf);
+
+Screen('DrawTexture',scr.main,const.tex.instruct,[],[0, 0,scr.scr_sizeX, scr.scr_sizeY]);
 DrawFormattedText(scr.main, text.loaded, 'justifytomax', 100, WhiteIndex(scr.main),[],[]);
 Screen('Flip', scr.main);
 KbWait;
@@ -85,7 +87,7 @@ for i = const.starttrial:length(Trialevents.trialmat);
 log_txt=sprintf(text.formatSpecTrialStart,num2str(clock));
 fprintf(const.log_text_fid,'%s\n',log_txt);
 
-[const,Trialevents,eye,text,gaze] = runSingleTrial(scr,const,Trialevents,my_key,text,sounds,eye,i,gaze);
+[const,Trialevents,eye,text] = runSingleTrial(scr,const,Trialevents,my_key,text,sounds,eye,i,gaze);
 
 log_txt=sprintf(text.formatSpecTrialEnd,num2str(clock));
 fprintf(const.log_text_fid,'%s\n',log_txt);

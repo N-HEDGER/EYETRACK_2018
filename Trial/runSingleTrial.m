@@ -51,17 +51,14 @@ const.trialsdone=trial.trialnum;
     
     Fixonset=Screen('Flip',scr.main,[1]);
     
-    WaitSecs(const.fixdur);
-    
     % If there is an eyetracker detected, start recording gaze
-
     if isa(eye.eyetracker,'EyeTracker')
     gaze_data = eye.eyetracker.get_gaze_data();
     log_txt=sprintf(text.gazestart,num2str(clock));
     fprintf(const.log_text_fid,'%s\n',log_txt);
     end
     
-
+    pause(const.fixdur);
     
     % Frames
     Screen('DrawTexture',scr.main,const.tex.Frametex,[],[const.framerectl]); 
@@ -91,10 +88,12 @@ const.trialsdone=trial.trialnum;
 
     pause(trial.duration)
     if isa(eye.eyetracker,'EyeTracker')
-        gaze.collected_gaze_data(i).gaze=eye.eyetracker.get_gaze_data();
+        collected_gaze_data=eye.eyetracker.get_gaze_data();
         eye.eyetracker.stop_gaze_data();
         log_txt=sprintf(text.gazestop,num2str(clock));
         fprintf(const.log_text_fid,'%s\n',log_txt);
+    else
+        collected_gaze_data=i;
     end
     
     %  Offset
@@ -122,10 +121,11 @@ const.trialsdone=trial.trialnum;
     
     if keyCode(my_key.space)==1;
     const.trialsdone=trial.trialnum;
-    config.scr = scr; config.const = rmfield(const,'tex'); config.Trialevents = Trialevents; config.my_key = my_key;config.text = text;config.sounds = sounds;config.eye = eye; config.gaze=gaze;
+    config.scr = scr; config.const = rmfield(const,'tex'); config.Trialevents = Trialevents; config.my_key = my_key;config.text = text;config.sounds = sounds;config.eye = eye;
     log_txt=sprintf(text.save,num2str(clock));
     fprintf(const.log_text_fid,'%s\n',log_txt);
     save(const.filename,'config');
+    save(strcat(const.gazefilename,'_trial',num2str(i),'_gaze.mat'),'collected_gaze_data')
     
     Screen('DrawDots',scr.main,scr.mid,const.bigfixsize,const.bigfixcol,[],1);
     Screen('DrawDots',scr.main,scr.mid,const.smallfixsize,const.smallfixcol,[],1);
@@ -134,10 +134,13 @@ const.trialsdone=trial.trialnum;
     Screen('Flip', scr.main);
     elseif keyCode(my_key.escape)==1
         const.trialsdone=trial.trialnum;
-        config.scr = scr; config.const = rmfield(const,'tex'); config.Trialevents = Trialevents; config.my_key = my_key;config.text = text;config.sounds = sounds;config.eye = eye;config.gaze=gaze;
+        config.scr = scr; config.const = rmfield(const,'tex'); config.Trialevents = Trialevents; config.my_key = my_key;config.text = text;config.sounds = sounds;config.eye = eye;
         log_txt=sprintf(text.formatSpecQuit,num2str(clock));
         fprintf(const.log_text_fid,'%s\n',log_txt);
         save(const.filename,'config');
+        save(strcat(const.gazefilename,'_trial',num2str(i),'_gaze.mat'),'gaze')
+        log_txt=sprintf(text.save,num2str(clock));
+        fprintf(const.log_text_fid,'%s\n',log_txt);
         ShowCursor(1);
         Screen('CloseAll')
     end

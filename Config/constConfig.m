@@ -47,7 +47,7 @@ const.sep=round(vaDeg2pix(const.sep_sizeVal,scr)/2)+round(const.element_size/2);
 
 
 const.asp=0.74; % Aspect ratio of images.
-const.framewidth=40; % Width of the frame.
+const.framewidth=20; % Width of the frame.
 
 const.stimbot=scr.scr_sizeY; % Bottom of screen.
 const.stimright=scr.scr_sizeX; % Right of screen.
@@ -70,7 +70,7 @@ const.smallerfixcol=[255 255 255];
 const.blue=[0 0 200];
 const.dotSizePix = 5;
 
-const.fixdur=0.3;
+const.fixdur=0.5;
 const.ITI=2; % Inter-trial interval.
 
 end

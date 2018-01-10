@@ -25,9 +25,13 @@ sbj=struct();
 sbj=RunExp; % Runs a GUI for inputting subject details.
 const.sbj=sbj;
 const.isfixed=const.sbj.isfixed;
-const.filename=strcat('Data/',const.sbj.subname{1},'.mat'); % Filename for mat file.
-const.txtfilename=strcat('Data/',const.sbj.subname{1},'_log.txt'); % Filename for log file
-const.gazefilename=strcat('Data/',const.sbj.subname{1},'_gaze','.mat'); % Filename for gaze data file
+mkdir(strcat('Data/',const.sbj.subname{1},'/const/'));
+mkdir(strcat('Data/',const.sbj.subname{1},'/log/'));
+mkdir(strcat('Data/',const.sbj.subname{1},'/gaze/'));
+
+const.filename=strcat('Data/',const.sbj.subname{1},'/const/',const.sbj.subname{1},'.mat'); % Filename for mat file.
+const.txtfilename=strcat('Data/',const.sbj.subname{1},'/log/',const.sbj.subname{1},'_log.txt'); % Filename for log file
+const.gazefilename=strcat('Data/',const.sbj.subname{1},'/gaze/',const.sbj.subname{1}); % Filename for gaze data file
 
 if exist(const.filename) % If the filename exists, get rid of everything else.
     datafilename=const.filename

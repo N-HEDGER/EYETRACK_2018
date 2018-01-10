@@ -55,8 +55,8 @@ else % If this is an old subject, then use the old config.
     Trialevents=const.config.Trialevents;
     sounds=const.config.sounds;
     [eye] = eyeConfig(sounds);
-    gaze=const.config.gaze;
     const=rmfield(const,'config');
+    gaze=struct();
 end
 
 
