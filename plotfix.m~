@@ -1,0 +1,18 @@
+struct=load('billboy_trial9_gaze.mat');
+data=struct.collected_gaze_data
+Xval=zeros(1,299);
+Yval=zeros(1,299);
+for i=1:299
+instance=data(i);
+Xval(i)=instance.LeftEye.GazePoint.OnDisplayArea(1)*1920;
+Yval(i)=instance.LeftEye.GazePoint.OnDisplayArea(2)*1080;
+end
+plot(Xval,Yval)
+axis([-10 1930 -10 1090],'fill')
+rectangle('Position',[0 0 1920 1080])
+rectangle('Position',[hj.stimrectl[1] 404 400 200])
+
+
+
+
+
