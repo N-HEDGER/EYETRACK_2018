@@ -29,7 +29,7 @@ const.scrams=2;
 const.durations=[5000];
 % May need adjuting based on refresh we seem to have.
 
-const.reps=40;
+const.reps=30;
 % Repetitions 1 for each stimulus.
 
 const.numtrials=(const.stimtypes*const.scrams*length(const.durations)*const.reps);

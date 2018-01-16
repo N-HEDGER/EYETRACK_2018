@@ -6,7 +6,7 @@
 % Version:  1.0
 % The main file that drives the experiment.
 
-% First settings
+% First settings 
 % --------------
 clear vars;clear mex;clear functions;close all;home;ListenChar(1);
 
