@@ -72,5 +72,7 @@ const.dotSizePix = 5;
 
 const.fixdur=0.5;
 const.ITI=2; % Inter-trial interval.
+[const.stimrectl] = CenterRect([0 0 round(const.element_size) round(const.element_size*const.asp)], scr.rect)-[const.sep 0 const.sep 0];
+[const.stimrectr] = CenterRect([0 0 round(const.element_size) round(const.element_size*const.asp)], scr.rect)+[const.sep 0 const.sep 0];
 
 end
