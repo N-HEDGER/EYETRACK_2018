@@ -17,7 +17,8 @@ const.desiredRes    = [1280,1024];          % Desired resolution
 
 % Mode
 % -----------------------
-const.debug = 1; % Whether to print the trial information to the command window.
+const.debug = 1;% Whether to print the trial information to the command window.
+const.calibrating=0;
     
 
 % Path     

@@ -1,6 +1,6 @@
 
 dir = (which('expLauncher'));cd(dir(1:end-18));
-
+Screen('Preference', 'SkipSyncTests', 1);
 % Add paths
 % ---------------
 addpath('Config','Conversion','Data');
@@ -9,7 +9,7 @@ addpath(genpath('/Users/nickhedger/Downloads/TobiiPro.SDK.Matlab_1.2.1.54'))
 const.desiredFD      = 60;                  % Desired refresh rate
 const.desiredRes    = [1280,1024];          % Desired resolution
 const.name=num2str(input('SubjectID?'));
-
+const.calibrating=1;
 screens = Screen('Screens');
 screenNumber = max(screens);
 white = WhiteIndex(screenNumber);
@@ -75,9 +75,12 @@ end
 Screen('TextSize', scr.main, 20);
 
 while ~KbCheck
-
+    sizeval = [screenXpixels/2 screenYpixels/2];
+    baseRect = [0 0 sizeval(1) sizeval(2)];
+    frame = CenterRectOnPoint(baseRect, screenXpixels/2, yCenter);
            origin = [screenXpixels/4 screenYpixels/4];
-        sizeval = [screenXpixels/2 screenYpixels/2];
+           penWidthPixels = 3;
+        
         
         %origin2 = [screenXpixels screenYpixels];
         sizeval2 = [screenXpixels screenYpixels];
@@ -109,13 +112,11 @@ while ~KbCheck
 
  
         
- 
-
-
-        Screen('FrameRect', scr.main, validityColor, frame, penWidthPixels);
+    Screen('FrameRect', scr.main, validityColor, frame, penWidthPixels);
         
     if isa(eyetracker,'EyeTracker')
         % Left Eye
+        
          if last_gaze.LeftEye.GazeOrigin.Validity
             distance = [distance; round(last_gaze.LeftEye.GazeOrigin.InUserCoordinateSystem(3)/10,1)];
             left_eye_pos_x = double(1-last_gaze.LeftEye.GazeOrigin.InTrackBoxCoordinateSystem(1))*sizeval(1) + origin(1);
@@ -145,9 +146,9 @@ while ~KbCheck
     % Flip to the screen. This command basically draws all of our previous
     % commands onto the screen.
     % For help see: Screen Flip?
-    penWidthPixels = 3;
     
-    baseRect = [0 0 sizeval(1) sizeval(2)];
+    
+    
     frame = CenterRectOnPoint(baseRect, screenXpixels/2, yCenter);
     Screen('DrawLine', scr.main, [0 0 255], screenXpixels/2, screenYpixels, screenXpixels/2, 0,[2]);
     Screen('DrawLine', scr.main, [0 0 255], 0, screenYpixels/2, screenXpixels, screenYpixels/2,[2]);
@@ -253,7 +254,7 @@ while calibrating
     end
     
     for i=1:length(points_to_calibrate)
-        Screen('DrawDots', scr.main, points_to_calibrate(i,:).*screen_pixels, vadeg*2, dotColor(2,:)/8, [], 2);
+        %Screen('DrawDots', scr.main, points_to_calibrate(i,:).*screen_pixels, vadeg*2, dotColor(2,:)/8, [], 2);
         Screen('DrawDots', scr.main, points_to_calibrate(i,:).*screen_pixels, vadeg, dotColor(2,:)/4, [], 2);
         Screen('DrawDots', scr.main, points_to_calibrate(i,:).*screen_pixels, dotSizePix*0.5, dotColor(2,:), [], 2);
     
