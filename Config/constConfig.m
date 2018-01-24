@@ -70,8 +70,8 @@ const.smallerfixcol=[255 255 255];
 const.blue=[0 0 200];
 const.dotSizePix = 5;
 
-const.fixdur=0.5;
-const.ITI=2; % Inter-trial interval.
+const.fixdur=1;
+const.ITI=0.5; % Inter-trial interval.
 if const.calibrating
 [const.stimrectl] = CenterRect([0 0 round(const.element_size) round(const.element_size*const.asp)], scr.rect)-[const.sep 0 const.sep 0];
 [const.stimrectr] = CenterRect([0 0 round(const.element_size) round(const.element_size*const.asp)], scr.rect)+[const.sep 0 const.sep 0];

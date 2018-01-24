@@ -4,7 +4,6 @@
 addpath(genpath('/Users/nickhedger/Downloads/TobiiPro.SDK.Matlab_1.2.1.54'))
 directory = (which('rescale'));cd(directory(1:end-20));
 
-
 % Add paths
 % ---------------
 addpath('Data');
@@ -93,4 +92,4 @@ end
 result=horzcat(cell2mat(trialnum)',cell2mat(times)',cell2mat(leftfixX)',cell2mat(leftfixY)',cell2mat(sidevec)',cell2mat(scvec)',cell2mat(modvec)');
 
 % Write the text file
-dlmwrite(strcat(trialinfo.config.const.sbj.subname{1},'_summary.txt'),result)
+dlmwrite(strcat(folder,'/',trialinfo.config.const.sbj.subname{1},'_summary.txt'),result)
