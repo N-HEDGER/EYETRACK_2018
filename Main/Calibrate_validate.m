@@ -5,6 +5,8 @@ Screen('Preference', 'SkipSyncTests', 1);
 % ---------------
 addpath('Config','Conversion','Data');
 addpath(genpath('/Users/nickhedger/Downloads/TobiiPro.SDK.Matlab_1.2.1.54'))
+addpath(genpath('/Users/nickhedger/Documents/prosdk-addons-matlab-master'))
+
 
 const.desiredFD      = 60;                  % Desired refresh rate
 const.desiredRes    = [1280,1024];          % Desired resolution
@@ -20,7 +22,10 @@ black = BlackIndex(screenNumber);
 [const] = constConfig(scr,const);
 
 mkdir(strcat('Data/','Calibration'));
+mkdir(strcat('Data/','Validation'));
+
 const.calibfilename=strcat('Data/','Calibration/',const.name,'.mat'); % Filename for gaze data file
+const.validfilename=strcat('Data/','Validation/',const.name,'.mat'); % Filename for gaze data file
 
 [vadegx,vadegy]=vaDeg2pix(1,scr);
 vadeg=(vadegx+vadegy)/2;
@@ -300,4 +305,172 @@ while calibrating
         end
     end
 end
+
+[scr.main,scr.rect] = Screen('OpenWindow',screenNumber,black,[], scr.clr_depth,2);
+
+while ~KbCheck
+    sizeval = [screenXpixels/2 screenYpixels/2];
+    baseRect = [0 0 sizeval(1) sizeval(2)];
+    frame = CenterRectOnPoint(baseRect, screenXpixels/2, yCenter);
+           origin = [screenXpixels/4 screenYpixels/4];
+           penWidthPixels = 3;
+        
+        
+        %origin2 = [screenXpixels screenYpixels];
+        sizeval2 = [screenXpixels screenYpixels];
+    DrawFormattedText(scr.main, 'When correctly positioned press any key to start the calibration.', 'center', screenYpixels * 0.1, white);
+
+    distance = [];
+    if isa(eyetracker,'EyeTracker')
+    gaze_data = eyetracker.get_gaze_data();
+
+    if ~isempty(gaze_data)
+        last_gaze = gaze_data(end);
+
+        validityColor = [255 0 0];
+
+        % Check if user has both eyes inside a reasonable tacking area.
+        if last_gaze.LeftEye.GazeOrigin.Validity && last_gaze.RightEye.GazeOrigin.Validity
+            left_validity = all(last_gaze.LeftEye.GazeOrigin.InTrackBoxCoordinateSystem(1:2) < 0.85) ...
+                                 && all(last_gaze.LeftEye.GazeOrigin.InTrackBoxCoordinateSystem(1:2) > 0.15);
+            right_validity = all(last_gaze.RightEye.GazeOrigin.InTrackBoxCoordinateSystem(1:2) < 0.85) ...
+                                 && all(last_gaze.RightEye.GazeOrigin.InTrackBoxCoordinateSystem(1:2) > 0.15);
+            if left_validity && right_validity
+                validityColor = [0 255 0];
+            end
+        end
+    else
+        
+        validityColor = [0 0 255];
+    end
+
+ 
+        
+    Screen('FrameRect', scr.main, validityColor, frame, penWidthPixels);
+        
+    if isa(eyetracker,'EyeTracker')
+        % Left Eye
+        
+         if last_gaze.LeftEye.GazeOrigin.Validity
+            distance = [distance; round(last_gaze.LeftEye.GazeOrigin.InUserCoordinateSystem(3)/10,1)];
+            left_eye_pos_x = double(1-last_gaze.LeftEye.GazeOrigin.InTrackBoxCoordinateSystem(1))*sizeval(1) + origin(1);
+            left_eye_pos_y = double(last_gaze.LeftEye.GazeOrigin.InTrackBoxCoordinateSystem(2))*sizeval(2) + origin(2);
+            left_eye_pos_x2 = double(last_gaze.LeftEye.GazePoint.OnDisplayArea(1))*sizeval2(1);
+            left_eye_pos_y2 = double(last_gaze.LeftEye.GazePoint.OnDisplayArea(2))*sizeval2(2);
+            right_eye_pos_x2 = double(last_gaze.RightEye.GazePoint.OnDisplayArea(1))*sizeval2(1);
+            right_eye_pos_y2 = double(last_gaze.RightEye.GazePoint.OnDisplayArea(2))*sizeval2(2);
+            
+            Screen('DrawDots', scr.main, [left_eye_pos_x left_eye_pos_y], dotSizePix, validityColor, [], 2);
+            Screen('DrawDots', scr.main, [left_eye_pos_x2 left_eye_pos_y2], dotSizePix, validityColor, [], 2);
+        end
+
+        % Right Eye
+        if last_gaze.RightEye.GazeOrigin.Validity
+            distance = [distance;round(last_gaze.RightEye.GazeOrigin.InUserCoordinateSystem(3)/10,1)];
+            right_eye_pos_x = double(1-last_gaze.RightEye.GazeOrigin.InTrackBoxCoordinateSystem(1))*sizeval(1) + origin(1);
+            right_eye_pos_y = double(last_gaze.RightEye.GazeOrigin.InTrackBoxCoordinateSystem(2))*sizeval(2) + origin(2);
+            Screen('DrawDots', scr.main, [right_eye_pos_x right_eye_pos_y], dotSizePix, validityColor, [], 2);
+        end
+        pause(0.01);
+    end
+
+    DrawFormattedText(scr.main, sprintf('Current distance to the eye tracker: %.2f cm.',mean(distance)), 'center', screenYpixels * 0.85, white);
+    end
+
+    % Flip to the screen. This command basically draws all of our previous
+    % commands onto the screen.
+    % For help see: Screen Flip?
+    
+    
+    
+    frame = CenterRectOnPoint(baseRect, screenXpixels/2, yCenter);
+    Screen('DrawLine', scr.main, [0 0 255], screenXpixels/2, screenYpixels, screenXpixels/2, 0,[2]);
+    Screen('DrawLine', scr.main, [0 0 255], 0, screenYpixels/2, screenXpixels, screenYpixels/2,[2]);
+    Screen('Flip', scr.main);
+
+end
+
+
+
+
+sample_count=30;
+time_out_ms=1000;
+calib2 = ScreenBasedCalibrationValidation(eyetracker, sample_count, time_out_ms);
+
+calib2.enter_validation_mode();
+
+
+ for i=1:length(points_to_calibrate)
+        
+        tic
+        while toc<1
+        Screen('DrawDots', scr.main, points_to_calibrate(i,:).*screen_pixels, dotSizePix-(toc*dotSizePix)+15, dotColor(1,:), [], 2);
+        Screen('DrawDots', scr.main, points_to_calibrate(i,:).*screen_pixels, (dotSizePix*0.5)-(toc*(dotSizePix*0.5))+15, dotColor(2,:), [], 2);
+
+        Screen('Flip', scr.main);
+
+        % Wait a moment to allow the user to focus on the point
+        end
+
+        if isa(eyetracker,'EyeTracker')
+            calib2.collect_data(points_to_calibrate(i,:));
+        end
+       
+    pause(0.3)
+ end
+ 
+ 
+ 
+calibration_result2 = calib2.compute();
+
+ 
+calibration_result2.Points
+calibration_result2.AverageAccuracyLeftEye
+calibration_result2.AveragePrecisionLeftEye
+calibration_result2.AveragePrecisionRMSLeftEye
+calibration_result2.AverageAccuracyRightEye
+calibration_result2.AveragePrecisionRightEye
+calibration_result2.AveragePrecisionRMSRightEye
+ 
+ 
+ 
+calib2.leave_validation_mode() 
+ 
+DrawFormattedText(scr.main, 'Calculating calibration result....', 'center', 'center', white);
+Screen('Flip', scr.main);
+
+        for p=1:length(points_to_calibrate)
+        Screen('DrawDots', scr.main, points_to_calibrate(p,:).*screen_pixels, vadeg, dotColor(2,:)/4, [], 2);
+        Screen('DrawDots', scr.main, points_to_calibrate(p,:).*screen_pixels, dotSizePix*0.5, dotColor(2,:), [], 2);
+    
+            for s=1:sample_count
+                Screen('DrawDots', scr.main, double(calibration_result2.Points(p).GazeData(s).LeftEye.GazePoint.OnDisplayArea.*screen_pixels), dotSizePix*0.3, leftColor, [], 2);
+                
+                Screen('DrawDots', scr.main, double(calibration_result2.Points(p).GazeData(s).RightEye.GazePoint.OnDisplayArea.*screen_pixels), dotSizePix*0.3, rightColor, [], 2);
+                
+            end
+        end
+        
+        
+        DrawFormattedText(scr.main, 'Press ''Space'' to continue....', 'center', screenYpixels * 0.95, white)
+        
+        
+        Screen('Flip', scr.main);
+        
+        imageArray2 = Screen('GetImage', scr.main, [scr.rect]);
+        
+        validfile.validation=calibration_result2;
+        validfile.image=imageArray2;
+        save(strcat(const.validfilename),'validfile')
+
+        KbWait
+        sca
+     
+
+
+    
+
+
+
+    
 

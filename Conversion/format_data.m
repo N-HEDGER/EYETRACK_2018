@@ -88,8 +88,70 @@ for i=1:length(trial)
 end
 
 
+
+
 % Flatten to matrix.
 result=horzcat(cell2mat(trialnum)',cell2mat(times)',cell2mat(leftfixX)',cell2mat(leftfixY)',cell2mat(sidevec)',cell2mat(scvec)',cell2mat(modvec)');
 
+for i=1:length(leftfixX)
+    
+leftfixX{i}(isnan(leftfixX{i}))=-1;
+end
+
+timeSeriesData=leftfixX;
+
+labels=cell(1,60);
+keywords=cell(1,60);
+
+for i=1:60
+    if events(i,3)==1
+        labels{i}=strcat(num2str(i),',intact');
+        keywords{i}=strcat(num2str(i),',intact');
+    elseif events(i,3)==2
+        labels{i}=strcat(num2str(i),',scrambled');
+        keywords{i}=strcat(num2str(i),',scrambled');
+    end
+end
+
+
+
+
+% Grafix requires everything in microseconds, a row of zeros and -1s
+% instead of NAs.
+
+val=17*1000;
+times2=(0:val:val*length(cell2mat(times)'));
+times2=times2(1:length(cell2mat(times)));
+
+matleftfixX=cell2mat(leftfixX);
+matleftfixY=cell2mat(leftfixY);
+matrightfixX=cell2mat(rightfixX);
+matrightfixY=cell2mat(rightfixY);
+
+
+matleftfixX(isnan(matleftfixX))=-1;
+matleftfixY(isnan(matleftfixY))=-1;
+matrightfixX(isnan(matrightfixX))=-1;
+matrightfixY(isnan(matrightfixY))=-1;
+
+save(strcat(folder,'/',trialinfo.config.const.sbj.subname{1},'_HCTSA.mat'),'timeSeriesData','labels','keywords')
+
+result2=horzcat(times2',repmat(0,1,length(cell2mat(trialnum)'))',matleftfixX',matleftfixY',matrightfixX',matrightfixY');
+
+
 % Write the text file
-dlmwrite(strcat(folder,'/',trialinfo.config.const.sbj.subname{1},'_summary.txt'),result)
+
+dlmwrite(strcat('/Users/nickhedger/Google Drive/EYETRACK_DATA/FREEVIEW/',trialinfo.config.const.sbj.subname{1},'_summary.txt'),result)
+
+csvwrite(strcat('/Users/nickhedger/Google Drive/Grafix/',trialinfo.config.const.sbj.subname{1},'_summary.csv'),result2)
+
+
+%dlmwrite(strcat('/Users/nickhedger/Google Drive/VALE_DATA/',trialinfo.config.const.sbj.subname{1},'_summary.txt'),result)
+
+%csvwrite(strcat('/Users/nickhedger/Google Drive/VALE_DATA/',trialinfo.config.const.sbj.subname{1},'_summary.csv'),result2)
+
+
+
+
+
+clear all
